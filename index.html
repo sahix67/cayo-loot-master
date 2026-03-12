@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1784359373129676" crossorigin="anonymous"></script>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cayo Loot Master | Tactical Terminal</title>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=Oswald:wght@400;700&display=swap');
+        
+        :root {
+            --green: #008000;
+            --bg: #050705;
+            --card: #0e110e;
+            --font-main: 'Oswald', sans-serif;
+        }
+
+        * { box-sizing: border-box; font-family: var(--font-main); }
+        body { background: var(--bg); color: #d0d0d0; margin: 0; padding: 10px; display: flex; flex-direction: column; align-items: center; }
+
+        #toast {
+            position: fixed; top: 20px; left: 50%; transform: translateX(-50%);
+            background: var(--green); color: white; padding: 15px 30px;
+            border-radius: 4px; font-weight: bold; z-index: 10000;
+            display: none; box-shadow: 0 0 20px rgba(0,128,0,0.5);
+            text-transform: uppercase; letter-spacing: 1px;
+        }
+
+        #welcome-modal {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.95); display: flex; align-items: center;
+            justify-content: center; z-index: 9999;
+        }
+        .modal-content {
+            background: var(--card); border: 2px solid var(--green);
+            padding: 40px; max-width: 500px; text-align: center;
+        }
+
+        .header { width: 100%; max-width: 1200px; margin-bottom: 20px; border-bottom: 3px solid var(--green); }
+        .header h1 { font-size: 2.8rem; margin: 0; color: var(--green); text-transform: uppercase; letter-spacing: 2px; }
+
+        /* Layout adjusted for mobile reordering */
+        .main-layout { display: grid; grid-template-columns: 1fr; gap: 20px; width: 100%; max-width: 1200px; }
+        
+        @media (min-width: 950px) { 
+            .main-layout { 
+                grid-template-columns: 1fr 1fr; 
+                align-items: start; 
+            } 
+            .right-col { 
+                grid-row: 1 / 3; /* Spans the full height on the right */
+                grid-column: 2; 
+            }
+        }
+
+        .card { background: var(--card); padding: 25px; border: 1px solid #1a201a; }
+        h3 { font-size: 1.4rem; color: #555; margin: 0 0 10px 0; border-left: 5px solid var(--green); padding-left: 10px; text-transform: uppercase; }
+        
+        #summary-line { color: var(--green); font-size: 1.1rem; margin-bottom: 15px; font-weight: bold; min-height: 1.5rem; }
+
+        select { font-size: 1.5rem; padding: 15px; background: #000; color: #fff; border: 1px solid #1a201a; width: 100%; outline: none; }
+        
+        .btn-loot { 
+            font-size: 1rem; font-weight: bold; padding: 15px 5px; 
+            background: transparent; border: 2px solid var(--green); color: var(--green);
+            cursor: pointer; transition: 0.2s; line-height: 1.2;
+        }
+        .btn-loot span { display: block; font-size: 0.75rem; color: #444; margin-top: 4px; }
+        .btn-loot:hover:not(:disabled) { background: var(--green); color: #000; }
+        .btn-loot:disabled { opacity: 0.2; cursor: not-allowed; border-color: #222; color: #222; }
+
+        .progress-bar { background: #000; height: 35px; border: 1px solid #1a201a; overflow: hidden; position: relative; margin: 15px 0; }
+        .progress-fill { background: var(--green); height: 100%; width: 0%; transition: 0.4s ease; }
+        #progress-text { position: absolute; width: 100%; text-align: center; top: 50%; transform: translateY(-50%); font-weight: bold; color: #fff; text-shadow: 1px 1px 2px #000; z-index: 2; }
+
+        .results-area { background: #000; border: 3px solid var(--green); padding: 30px; position: sticky; top: 10px; }
+        .total-display { font-size: 4.5rem; color: var(--green); font-weight: 700; text-align: center; line-height: 1; margin: 10px 0; }
+        
+        .breakdown-box { background: #0a0d0a; padding: 15px; border: 1px dashed #222; margin-bottom: 20px; font-family: 'Barlow Condensed'; font-size: 0.95rem; color: #666; }
+        .breakdown-line { display: flex; justify-content: space-between; margin-bottom: 4px; }
+
+        .payout-row { display: flex; justify-content: space-between; font-size: 1.8rem; padding: 15px; background: #0a0d0a; margin-bottom: 10px; border-left: 6px solid var(--green); }
+
+        .btn-fair { background: var(--green); color: #fff; border: none; padding: 6px 15px; font-weight: bold; cursor: pointer; border-radius: 2px; font-size: 0.8rem; }
+        
+        input[type=range] { width: 100%; accent-color: var(--green); cursor: pointer; }
+
+        .action-btn { width: 100%; padding: 20px; border: none; font-size: 1.5rem; font-weight: bold; cursor: pointer; text-transform: uppercase; margin-top: 15px; }
+        .btn-copy { background: var(--green); color: #fff; }
+        .btn-reset { background: transparent; color: #cc0000; border: 2px solid #cc0000; font-size: 1.1rem; padding: 10px; }
+
+        .inv-item { display: flex; justify-content: space-between; align-items: center; padding: 12px; border-bottom: 1px solid #1a201a; background: #0a0d0a; margin-bottom: 5px; }
+        .remove { color: #cc0000; cursor: pointer; border: none; background: none; font-size: 2rem; }
+
+        .support-bar { margin-top: 40px; padding: 20px; text-align: center; width: 100%; border-top: 1px solid #1a201a; }
+        .support-link { color: #444; text-decoration: none; margin: 0 20px; font-size: 1.1rem; transition: 0.3s; }
+        .coffee-link { display: inline-block; color: var(--green); font-weight: bold; border: 2px dashed var(--green); padding: 10px 20px; text-transform: uppercase; background: rgba(0, 128, 0, 0.05); }
+
+        .guide-text { font-size: 0.95rem; color: #888; line-height: 1.6; }
+        .guide-text b { color: var(--green); }
+    </style>
+</head>
+<body>
+
+    <div id="toast">Data Copied to Terminal</div>
+
+    <div id="welcome-modal">
+        <div class="modal-content">
+            <h1 style="color:var(--green); font-size: 2.5rem; margin-top: 0;">HEIST BRIEFING</h1>
+            <p style="font-size: 1.3rem; line-height: 1.6;">Welcome back, <span style="color:var(--green); font-weight:bold;">KAPITAN!</span></p>
+            <button onclick="closeModal()" style="background:var(--green); border:none; padding:15px 40px; font-size:1.5rem; font-weight:bold; cursor:pointer; width:100%; color:#fff;">ACCESS TERMINAL</button>
+        </div>
+    </div>
+
+    <header class="header">
+        <h1>CAYO LOOT MASTER</h1>
+    </header>
+
+    <main class="main-layout">
+        <div class="left-col" style="display: flex; flex-direction: column; gap: 20px;">
+            <div class="card">
+                <h3>MISSION_TARGETS</h3>
+                <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div>
+                        <label style="color:var(--green); font-size: 0.8rem;">PLAYERS</label>
+                        <select id="player-select">
+                            <option value="1">1 PLAYER</option>
+                            <option value="2">2 PLAYERS</option>
+                            <option value="3">3 PLAYERS</option>
+                            <option value="4">4 PLAYERS</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="color:var(--green); font-size: 0.8rem;">OBJECTIVE</label>
+                        <select id="primary-target">
+                            <option value="630000">TEQUILA</option>
+                            <option value="700000">RUBY NECKLACE</option>
+                            <option value="770000">BONDS</option>
+                            <option value="1300000">DIAMOND</option>
+                            <option value="1900000">PANTHER</option>
+                        </select>
+                    </div>
+                </div>
+                <div style="margin-top: 20px; display: flex; gap: 20px;">
+                    <label style="cursor:pointer;"><input type="checkbox" id="hard-mode"> HARD</label>
+                    <label style="cursor:pointer;"><input type="checkbox" id="elite-challenge" checked> ELITE</label>
+                    <label style="cursor:pointer;"><input type="checkbox" id="office-safe" checked> SAFE</label>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3>SECONDARY_LOOT</h3>
+                <div id="summary-line">0 Loot Collected</div>
+                
+                <div class="progress-bar">
+                    <div id="progress-fill" class="progress-fill"></div>
+                    <div id="progress-text">0 / 100%</div>
+                </div>
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+                    <button class="btn-loot" onclick="addLoot('Gold')">+ GOLD<span>$332k | 66%</span></button>
+                    <button class="btn-loot" onclick="addLoot('Coke')">+ COKE<span>$220k | 50%</span></button>
+                    <button id="paint-btn" class="btn-loot" onclick="addLoot('Paint')">+ PAINT<span>$189k | 50%</span></button>
+                    <button class="btn-loot" onclick="addLoot('Weed')">+ WEED<span>$145k | 37%</span></button>
+                    <button class="btn-loot" onclick="addLoot('Cash')">+ CASH<span>$90k | 25%</span></button>
+                </div>
+                <div id="inventory-list" style="margin-top: 20px;"></div>
+            </div>
+        </div>
+
+        <div class="right-col">
+            <div class="results-area">
+                <h3 style="color:#fff; border:none; padding:0;">FINAL_PAYOUT</h3>
+                <div id="total-val" class="total-display">$0</div>
+                <div class="breakdown-box" id="breakdown-list"></div>
+                <div id="player-payouts"></div>
+                <div style="margin-top: 20px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+                        <h3 style="margin:0; font-size:1rem; border:none; padding:0;">DISTRIBUTION</h3>
+                        <button id="fair-btn" class="btn-fair" onclick="setFairCuts()">⚖️ FAIR TRADE</button>
+                    </div>
+                    <div id="slider-list"></div>
+                </div>
+                <button onclick="copyResults()" class="action-btn btn-copy">COPY DATA REPORT</button>
+                <button onclick="resetLoot()" class="action-btn btn-reset">RESET SESSION</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>TERMINAL_GUIDE</h3>
+            <div class="guide-text">
+                1. Select your <b>Crew Size</b> and <b>Primary Target</b>.<br>
+                2. Toggle <b>Hard Mode</b> for a 10% primary bonus.<br>
+                3. Select the <b>Secondary Loot</b> items discovered during intel gathering.<br>
+                4. Adjust <b>Crew Cuts</b> manually, or use the <b>Fair Trade</b> button to balance the squad.<br>
+                5. Review the final payout. Use <b>Copy Data Report</b> to export your heist summary.
+            </div>
+        </div>
+    </main>
+
+    <footer class="support-bar">
+        <a href="https://guns.lol/sahi_fr" target="_blank" class="support-link">CONTACT ADMIN</a>
+        <a href="https://buymeacoffee.com/sahi_fr" target="_blank" class="support-link coffee-link">⚡ TRIBUTE FUNDS TO REFILL EL RUBIO'S LOOT</a>
+    </footer>
+
+<script>
+    const lootData = {
+        'Gold': { space: 66.67, value: 332000 },
+        'Coke': { space: 50, value: 220000 },
+        'Paint': { space: 50, value: 189000 },
+        'Weed': { space: 37.5, value: 145000 },
+        'Cash': { space: 25, value: 90000 }
+    };
+
+    let currentLoot = [];
+    let cuts = [100, 0, 0, 0];
+
+    function closeModal() { document.getElementById('welcome-modal').style.display = 'none'; }
+    function resetLoot() { currentLoot = []; update(); }
+
+    function setFairCuts() {
+        const count = parseInt(document.getElementById('player-select').value);
+        if(count === 1) cuts = [100,0,0,0];
+        if(count === 2) cuts = [50, 50, 0, 0];
+        if(count === 3) cuts = [40, 30, 30, 0];
+        if(count === 4) cuts = [25, 25, 25, 25];
+        initSlidersOnly(count);
+        update();
+    }
+
+    function init() {
+        const count = parseInt(document.getElementById('player-select').value);
+        document.getElementById('fair-btn').style.display = count > 1 ? 'block' : 'none';
+        const sliderList = document.getElementById('slider-list');
+        sliderList.innerHTML = "";
+        cuts = [100, 0, 0, 0];
+        for (let i = 1; i < count; i++) { cuts[i] = 15; cuts[0] -= 15; }
+        for (let i = 0; i < count; i++) {
+            sliderList.innerHTML += `
+                <div style="margin-bottom:15px">
+                    <div style="display:flex; justify-content:space-between; font-size:1.1rem">
+                        <span>PLAYER ${i+1}</span><span style="color:var(--green)" id="perc-label-${i}">${cuts[i]}%</span>
+                    </div>
+                    <input type="range" id="slide-${i}" min="15" max="100" step="5" value="${cuts[i]}" ${i===0?'disabled':''} oninput="moveSlider(${i}, this.value)">
+                </div>`;
+        }
+        update();
+    }
+
+    function moveSlider(idx, val) {
+        const count = parseInt(document.getElementById('player-select').value);
+        cuts[idx] = parseInt(val);
+        let crewTotal = 0;
+        for (let i = 1; i < count; i++) crewTotal += cuts[i];
+        if (crewTotal > 85) { cuts[idx] -= (crewTotal - 85); crewTotal = 85; }
+        cuts[0] = 100 - crewTotal;
+        initSlidersOnly(count);
+        update();
+    }
+
+    function initSlidersOnly(count) {
+        for (let i = 0; i < count; i++) {
+            document.getElementById(`perc-label-${i}`).innerText = cuts[i] + "%";
+            document.getElementById(`slide-${i}`).value = cuts[i];
+        }
+    }
+
+    function addLoot(type) {
+        const count = parseInt(document.getElementById('player-select').value);
+        let currentSpaceUsed = currentLoot.reduce((s, l) => s + l.used, 0);
+        let maxTotalSpace = count * 100;
+        let remainingGlobalSpace = maxTotalSpace - currentSpaceUsed;
+
+        if (type === 'Paint' && remainingGlobalSpace < 50) return;
+        if (remainingGlobalSpace <= 0) return;
+
+        let spaceNeeded = lootData[type].space;
+        let used = Math.min(spaceNeeded, remainingGlobalSpace);
+        let percentageOfStack = used / spaceNeeded;
+        
+        currentLoot.push({ 
+            name: type, 
+            used: used, 
+            val: lootData[type].value * percentageOfStack,
+            fullQty: percentageOfStack.toFixed(2)
+        });
+        update();
+    }
+
+    function removeLoot(i) { currentLoot.splice(i, 1); update(); }
+
+    function update() {
+        const count = parseInt(document.getElementById('player-select').value);
+        const isHard = document.getElementById('hard-mode').checked;
+        const isElite = document.getElementById('elite-challenge').checked;
+        const isSafe = document.getElementById('office-safe').checked;
+        
+        let primaryBase = parseInt(document.getElementById('primary-target').value);
+        let primaryTotal = primaryBase * (isHard ? 1.1 : 1);
+        let secondary = currentLoot.reduce((s, l) => s + l.val, 0);
+        let safeVal = isSafe ? 60000 : 0;
+        let subtotal = primaryTotal + secondary + safeVal;
+        let fees = subtotal * 0.12;
+        let eliteBonus = isElite ? (isHard ? 100000 : 50000) : 0;
+        let netTotal = (subtotal - fees) + eliteBonus;
+
+        document.getElementById('total-val').innerText = "$" + Math.floor(netTotal).toLocaleString();
+        
+        document.getElementById('breakdown-list').innerHTML = `
+            <div class="breakdown-line"><span>PRIMARY TARGET</span><span>$${Math.floor(primaryTotal).toLocaleString()}</span></div>
+            <div class="breakdown-line"><span>SECONDARY TOTAL</span><span>$${Math.floor(secondary).toLocaleString()}</span></div>
+            ${isSafe ? `<div class="breakdown-line"><span>SAFE ($60k+)</span><span>$60,000</span></div>` : ''}
+            <div class="breakdown-line"><span>FEES (12%)</span><span>-$${Math.floor(fees).toLocaleString()}</span></div>
+            <div class="breakdown-line" style="color:var(--green)"><span>ELITE BONUS</span><span>+$${eliteBonus.toLocaleString()}</span></div>
+        `;
+
+        const pDiv = document.getElementById('player-payouts');
+        pDiv.innerHTML = "";
+        for (let i = 0; i < count; i++) {
+            pDiv.innerHTML += `<div class="payout-row"><span>PLAYER ${i+1}</span><span>$${Math.floor(netTotal * cuts[i]/100).toLocaleString()}</span></div>`;
+        }
+
+        let tally = {};
+        currentLoot.forEach(l => tally[l.name] = (tally[l.name] || 0) + parseFloat(l.fullQty));
+        let lootItems = Object.entries(tally).map(([name, qty]) => `${qty.toFixed(2)} ${name}`).join(", ");
+        let safeSummary = isSafe ? (lootItems ? " + Safe ($60k+)" : "Safe ($60k+)") : "";
+        document.getElementById('summary-line').innerText = (lootItems + safeSummary) || "0 Loot Collected";
+
+        const inv = document.getElementById('inventory-list');
+        inv.innerHTML = "";
+        currentLoot.forEach((l, i) => {
+            inv.innerHTML += `
+                <div class="inv-item">
+                    <div>
+                        <strong>${l.fullQty} ${l.name}</strong> 
+                        <span style="color:var(--green); margin-left:10px;">$${Math.floor(l.val).toLocaleString()}</span>
+                    </div>
+                    <button class="remove" onclick="removeLoot(${i})">×</button>
+                </div>`;
+        });
+
+        let spaceUsed = currentLoot.reduce((s, l) => s + l.used, 0);
+        let maxSpace = count * 100;
+        document.getElementById('progress-fill').style.width = (spaceUsed / maxSpace * 100) + "%";
+        document.getElementById('progress-text').innerText = `${Math.floor(spaceUsed)} / ${maxSpace}% CAPACITY`;
+
+        document.getElementById('paint-btn').disabled = (maxSpace - spaceUsed) < 50;
+    }
+
+    function showToast() {
+        const t = document.getElementById('toast');
+        t.style.display = 'block';
+        setTimeout(() => { t.style.display = 'none'; }, 2500);
+    }
+
+    function copyResults() {
+        const target = document.getElementById('primary-target').options[document.getElementById('primary-target').selectedIndex].text;
+        const total = document.getElementById('total-val').innerText;
+        const count = parseInt(document.getElementById('player-select').value);
+        const isSafe = document.getElementById('office-safe').checked;
+        
+        let tally = {};
+        currentLoot.forEach(l => tally[l.name] = (tally[l.name] || 0) + parseFloat(l.fullQty));
+        let lootText = Object.entries(tally).map(([name, qty]) => `${qty.toFixed(2)} ${name.toLowerCase()}`).join(", ");
+        if (isSafe) lootText += (lootText ? ", " : "") + "safe cash";
+
+        let report = `CAYO HEIST REPORT\nTarget: ${target}\n\nLoot Collected:\n${lootText || 'None'}\n\n`;
+        
+        for (let i = 0; i < count; i++) {
+            let val = Math.floor(parseFloat(document.getElementById('total-val').innerText.replace(/[^0-9]/g,'')) * cuts[i]/100);
+            report += `Player ${i+1}: $${val.toLocaleString()}\n`;
+        }
+        
+        report += `\nTotal Profit: ${total}\n-------------------`;
+        navigator.clipboard.writeText(report).then(showToast);
+    }
+
+    document.getElementById('player-select').onchange = init;
+    document.getElementById('primary-target').onchange = update;
+    document.getElementById('hard-mode').onchange = update;
+    document.getElementById('elite-challenge').onchange = update;
+    document.getElementById('office-safe').onchange = update;
+    init();
+</script>
+</body>
+</html>
